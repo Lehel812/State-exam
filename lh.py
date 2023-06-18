@@ -43,7 +43,7 @@ def main():
         return 0
     except SyntaxError:
         sys.stderr.write('Need python 2.5 to run this program.\n')
-    except Exception, e:
+    except Exception as e:
         sys.stderr.write('Error: ' + e.message + '\n')
         return 1
 

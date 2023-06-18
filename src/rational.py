@@ -11,6 +11,8 @@ of rational numbers with common operations over them.
 
 import re
 
+from numpy.compat import long
+
 
 class InvalidRationalReprError(Exception):
 	"""Exception to be raised when an invalid rational number is encountered."""
@@ -34,7 +36,8 @@ def fromText(text):
     Raises InvalidRationalReprError if the text cannot be converted into
     a rational number.
     """
-    rationalRegExp = re.compile(ur'^\s*(-?\d+)\s*(/\s*(\d+))?\s*$', re.U)
+    #"origin" rationalRegExp = re.compile(ur'^\s*(-?\d+)\s*(/\s*(\d+))?\s*$', re.U)
+    rationalRegExp = re.compile('^\s*(-?\d+)\s*(/\s*(\d+))?\s*$', re.U)
     m = re.match(rationalRegExp, text)
     if m != None:
         a = long(m.group(1))
@@ -80,7 +83,7 @@ class Rational:
         Raises ValueError if some of the preconditons are not met.
         """
         if b == 0:
-            raise ValueError, 'b must be nonzero.'
+            raise ValueError('b must be nonzero.')
 
         try:
             # Lets suppose that a is a rational number
@@ -88,7 +91,7 @@ class Rational:
             self.__b = a.denom()
 
             if b != 1:
-                raise ValueError, 'If a is a rational number, b must be 1.'
+                raise ValueError('If a is a rational number, b must be 1.')
         except AttributeError:
             # a and b must be ordinary numbers
             self.__a = a

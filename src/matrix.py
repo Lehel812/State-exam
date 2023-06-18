@@ -43,7 +43,7 @@ def fromText(text, itemFromStrFunc=int):
     lines = lines[:-1]
 
     # RegExp for a matrix item
-    #matrixItemRE = re.compile(ur'\s*(\S+)\s*', re.U)
+    #"original" matrixItemRE = re.compile(ur'\s*(\S+)\s*', re.U)
     matrixItemRE = re.compile('\s*(\S+)\s*', re.U)
 
     # Get the number of rows and columns

@@ -7,6 +7,8 @@
 """This module contains a Lemke-Howson algorithm implementation
 and various functions that are used in that algorithm.
 """
+from functools import reduce
+
 from fontTools.misc.py23 import xrange
 
 import matrix
@@ -63,8 +65,8 @@ def createTableaux(m1, m2):
     Raises ValueError if some of the preconditions are not met.
     """
     if m1.getNumRows() != m2.getNumRows() or m1.getNumCols() != m2.getNumCols():
-        raise ValueError, 'Selected matrices does not have the same number ' +\
-                'of rows and columns'
+        raise ValueError('Selected matrices does not have the same number ' + \
+                         'of rows and columns')
 
     # The total number of strategies of both players
     S = m1.getNumRows() + m1.getNumCols()
@@ -189,14 +191,14 @@ def getEquilibrium(t, p1SCount):
     """
     # 1st precondition
     if p1SCount < 0 or t.getNumRows() <= p1SCount:
-        raise ValueError, 'Invalid number of strategies of player 1.'
+        raise ValueError('Invalid number of strategies of player 1.')
     # 2nd precondition
     firstColNums = []
     for i in xrange(1, t.getNumRows() + 1):
         firstColNums.append(abs(t.getItem(i, 1)))
     for i in xrange(1, t.getNumRows() + 1):
         if not i in firstColNums:
-            raise ValueError, 'Invalid indices in the first column of the tableaux.'
+            raise ValueError('Invalid indices in the first column of the tableaux.')
 
     # I decided to use a list instead of a tuple, because I need
     # to modify it (tuples are immutable)
@@ -230,13 +232,13 @@ def normalizeEquilibrium(eq):
     """
     # 1st precondition
     if len(eq) != 2 or (len(eq[0]) == 0 or len(eq[1]) == 0):
-        raise ValueError, 'Selected equilibrium is not valid.'
+        raise ValueError('Selected equilibrium is not valid.')
     # 2nd precondition
     for i in xrange(0, 2):
         for j in xrange(0, len(eq[i])):
             if not isinstance(eq[i][j], rational.Rational):
-                raise ValueError, 'Selected equilibrium contains a ' +\
-                    'non-rational number.'
+                raise ValueError('Selected equilibrium contains a ' + \
+                                 'non-rational number.')
 
     # Normalizes a single part of the equilibrium (the normalization
     # procedure is the same as with vectors)
