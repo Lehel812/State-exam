@@ -18,12 +18,12 @@ def main():
         # These imports must be here because of possible
         # SyntaxError exceptions in different versions of python
         # (this program needs python 2.5)
-        import src.io
+#        import src.io
         import src.lh
 
         # Check program arguments (there should be none)
         if len(sys.argv) > 1:
-            stream = sys.stderrLL
+            stream = sys.stderr
             if sys.argv[1] in ['-h', '--help']:
                 stream = sys.stdout
             src.io.printHelp(stream)
@@ -37,8 +37,6 @@ def main():
 
         # Print both matrices and the result
         src.io.printGameInfo(m1, m2, eq, sys.stdout)
-
-
 
         return 0
     except SyntaxError:

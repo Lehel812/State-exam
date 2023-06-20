@@ -7,8 +7,6 @@
 """This module contains a Lemke-Howson algorithm implementation
 and various functions that are used in that algorithm.
 """
-from functools import reduce
-
 from fontTools.misc.py23 import xrange
 
 import matrix

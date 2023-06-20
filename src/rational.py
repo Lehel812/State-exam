@@ -36,7 +36,6 @@ def fromText(text):
     Raises InvalidRationalReprError if the text cannot be converted into
     a rational number.
     """
-    #"origin" rationalRegExp = re.compile(ur'^\s*(-?\d+)\s*(/\s*(\d+))?\s*$', re.U)
     rationalRegExp = re.compile('^\s*(-?\d+)\s*(/\s*(\d+))?\s*$', re.U)
     m = re.match(rationalRegExp, text)
     if m != None:
