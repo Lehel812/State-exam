@@ -12,13 +12,15 @@ using the Lemke-Howson algorithm.
 
 import sys
 
+sys.path.append('./src')
+
 
 def main():
     try:
         # These imports must be here because of possible
         # SyntaxError exceptions in different versions of python
         # (this program needs python 2.5)
-#        import src.io
+        import src.io
         import src.lh
 
         # Check program arguments (there should be none)
