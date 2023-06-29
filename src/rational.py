@@ -61,26 +61,28 @@ class Rational:
     Instances of this class are immutable.
     """
 
+    """Creates a new rational number.
+
+            If a and b are numbers (int, long), then the resulting rational number
+            will be in the form a/b. If just a or just b is negative, then the
+            rational number will be negative. If both (a and b) are negative, then
+            the rational number will be positive. If a and b are commensurable,
+            then they will be divided by their greatest common divisor (e.g. 5/10
+            will be transformed into 1/2).
+
+            If just a is given and it's a rational number, then the resulting
+            rational number will be equal to a.
+
+            Preconditions:
+                - b must be nonzero
+                - a and b must be immutable numeric objects
+                - if a is a rational number, b must be 1
+
+            Raises ValueError if some of the preconditons are not met.
+            """
+
     def __init__(self, a, b=1):
-        """Creates a new rational number.
 
-        If a and b are numbers (int, long), then the resulting rational number
-        will be in the form a/b. If just a or just b is negative, then the
-        rational number will be negative. If both (a and b) are negative, then
-        the rational number will be positive. If a and b are commensurable,
-        then they will be divided by their greatest common divisor (e.g. 5/10
-        will be transformed into 1/2).
-
-        If just a is given and it's a rational number, then the resulting
-        rational number will be equal to a.
-
-        Preconditions:
-            - b must be nonzero
-            - a and b must be immutable numeric objects
-            - if a is a rational number, b must be 1
-
-        Raises ValueError if some of the preconditons are not met.
-        """
         if b == 0:
             raise ValueError('b must be nonzero.')
 
@@ -162,7 +164,7 @@ class Rational:
         """Does the same as __mul__()."""
         return self.__mul__(r)
 
-    def __div__(self, r):
+    def __truediv__(self, r):
         """Divides self with r (r can be a number or other Rational).
 
         Returned number is normalized (based on Commensurability).
@@ -179,7 +181,7 @@ class Rational:
 
     def __rdiv__(self, r):
         """Does the same as __div__()."""
-        return self.__div__(r)
+        return self.__truediv__(r)
 
     def __abs__(self):
         """Returns the absolute value of this rational."""

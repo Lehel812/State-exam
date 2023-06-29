@@ -53,9 +53,9 @@ def fromText(text, itemFromStrFunc=int):
     # Parse the input text into a matrix
     try:
         m = Matrix(rows, cols)
-        for i in xrange(0, rows):
+        for i in range(0, rows):
             rowItems = re.findall(matrixItemRE, lines[i])
-            for j in xrange(0, cols):
+            for j in range(0, cols):
                 m.setItem(i + 1, j + 1, itemFromStrFunc(rowItems[j]))
         return m
     except IndexError as e:
@@ -91,9 +91,9 @@ class Matrix(object):
 
         # Create the matrix and initialize all elements to zero
         self.__m = []
-        for i in xrange(1, self.__rows + 1):
+        for i in range(1, self.__rows + 1):
             row = []
-            for j in xrange(1, self.__cols + 1):
+            for j in range(1, self.__cols + 1):
                 row.append(0)
             self.__m.append(row)
 
@@ -102,7 +102,7 @@ class Matrix(object):
         return self.__rows
 
     def getNumCols(self):
-        """Returns the number of rows of the matrix."""
+        """Returns the number of colums of the matrix."""
         return self.__cols
 
     def setItem(self, i, j, val):
@@ -157,8 +157,8 @@ class Matrix(object):
         of matrix columns.
         """
         res = ''
-        for i in xrange(1, self.getNumRows() + 1):
-            for j in xrange(1, self.getNumCols() + 1):
+        for i in range(1, self.getNumRows() + 1):
+            for j in range(1, self.getNumCols() + 1):
                 res += repr(self.getItem(i, j))
                 res += ' ' if j < self.getNumCols() else '\n'
         return res
@@ -175,8 +175,8 @@ class Matrix(object):
             return False
 
         # Check items
-        for i in xrange(1, self.getNumRows() + 1):
-            for j in xrange(1, self.getNumCols() + 1):
+        for i in range(1, self.getNumRows() + 1):
+            for j in range(1, self.getNumCols() + 1):
                 if self.getItem(i, j) != other.getItem(i, j):
                     return False
 

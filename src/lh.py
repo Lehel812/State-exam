@@ -7,14 +7,14 @@
 """This module contains a Lemke-Howson algorithm implementation
 and various functions that are used in that algorithm.
 """
+from functools import reduce
+
 from fontTools.misc.py23 import xrange
 
 import matrix
 import rational
 
-
-def normalizeMatrices(m1, m2):
-    """Returns normalized selected matrices in a tuple.
+"""Returns normalized selected matrices in a tuple.
     Normalized matrix does not have any row with all zeros, nor
     any column with all zeros. Also any element will contain positive
     number.
@@ -27,13 +27,15 @@ def normalizeMatrices(m1, m2):
     If both matrices do not have any negative items, nor any items
     equal to zero, no constant is added.
     """
+def normalizeMatrices(m1, m2):
+
     ms = (m1, m2)
 
     # Check for the least value in both matrices
     lowestVal = m1.getItem(1, 1)
     for m in ms:
-        for i in xrange(1, m.getNumRows() + 1):
-            for j in xrange(1, m.getNumCols() + 1):
+        for i in range(1, m.getNumRows() + 1):
+            for j in range(1, m.getNumCols() + 1):
                 if m.getItem(i, j) < lowestVal:
                     lowestVal = m.getItem(i, j)
 
@@ -43,16 +45,14 @@ def normalizeMatrices(m1, m2):
     # Copy all items from both matrices and add a proper constant
     # to all values
     cnst = 0 if lowestVal > 0 else abs(lowestVal) + 1
-    for k in xrange(0, len(normMs)):
-        for i in xrange(1, ms[k].getNumRows() + 1):
-            for j in xrange(1, ms[k].getNumCols() + 1):
+    for k in range(0, len(normMs)):
+        for i in range(1, ms[k].getNumRows() + 1):
+            for j in range(1, ms[k].getNumCols() + 1):
                 normMs[k].setItem(i, j, ms[k].getItem(i, j) + cnst)
 
     return normMs
 
-
-def createTableaux(m1, m2):
-    """Creates a tableaux from the two selected matrices.
+"""Creates a tableaux from the two selected matrices.
 
     m1 - first matrix (Matrix instance)
     m2 - second matrix (Matrix instance)
@@ -62,6 +62,9 @@ def createTableaux(m1, m2):
 
     Raises ValueError if some of the preconditions are not met.
     """
+
+def createTableaux(m1, m2):
+
     if m1.getNumRows() != m2.getNumRows() or m1.getNumCols() != m2.getNumCols():
         raise ValueError('Selected matrices does not have the same number ' + \
                          'of rows and columns')
@@ -77,28 +80,27 @@ def createTableaux(m1, m2):
     # Initialize the first column (index of the currect basis variable).
     # Because there are only slack variables at the beginning, initialize
     # it to a sequence of negative numbers starting from -1.
-    for i in xrange(1, t.getNumRows() + 1):
+    for i in range(1, t.getNumRows() + 1):
         t.setItem(i, 1, -i)
 
     # Initialize the second column to all 1s (current value of all basis)
-    for i in xrange(1, t.getNumRows() + 1):
+    for i in range(1, t.getNumRows() + 1):
         t.setItem(i, 2, 1)
 
     # Initialize indices from the first matrix
-    for i in xrange(1, m1.getNumRows() + 1):
-        for j in xrange(1, m1.getNumCols() + 1):
+    for i in range(1, m1.getNumRows() + 1):
+        for j in range(1, m1.getNumCols() + 1):
             t.setItem(i, m1.getNumRows() + j + 2, -m1.getItem(i, j))
 
     # Initialize indices from the second matrix
-    for i in xrange(1, m2.getNumRows() + 1):
-        for j in xrange(1, m2.getNumCols() + 1):
+    for i in range(1, m2.getNumRows() + 1):
+        for j in range(1, m2.getNumCols() + 1):
             t.setItem(m1.getNumRows() + j, i + 2, -m2.getItem(i, j))
 
     return t
 
 
-def makePivotingStep(t, p1SCount, ebVar):
-    """Makes a single pivoting step in the selected tableaux by
+"""Makes a single pivoting step in the selected tableaux by
     bringing the selected variable into the basis. All changes are done
     in the original tableaux. Returns the variable that left the basis.
 
@@ -112,6 +114,7 @@ def makePivotingStep(t, p1SCount, ebVar):
 
     Raises ValueError if some of the preconditions are not met.
     """
+def makePivotingStep(t, p1SCount, ebVar):
     # 1st precondition
     if abs(ebVar) <= 0 or abs(ebVar) > t.getNumRows():
         raise ValueError('Selected variable index is invalid.')
@@ -132,10 +135,9 @@ def makePivotingStep(t, p1SCount, ebVar):
         #   -1,-2,-3,4,5,6 corresponds to the first part of the tableaux
         #   1,2,3,-4,-5,-6 corresponds to the second part of the tableaux
         if -p1SCount <= var < 0 or var > p1SCount:
-            return xrange(1, p1SCount + 1)
+            return range(1, p1SCount + 1)
         else:
-            return xrange(p1SCount + 1, t.getNumRows() + 1)
-
+            return range(p1SCount + 1, t.getNumRows() + 1)
     # Check which variable should leave the basis using the min-ratio rule
     # (it will have the lowest ratio)
     lbVar = None
@@ -150,30 +152,25 @@ def makePivotingStep(t, p1SCount, ebVar):
                 lbVar = t.getItem(i, 1)
                 lbVarRow = i
                 lbVarCoeff = t.getItem(i, varToCol(ebVar))
-
     # Update the row in which the variable that will leave the basis was
     # found in the previous step
     t.setItem(lbVarRow, 1, ebVar)
     t.setItem(lbVarRow, varToCol(ebVar), 0)
     t.setItem(lbVarRow, varToCol(lbVar), -1)
-    for j in xrange(2, t.getNumCols() + 1):
+    for j in range(2, t.getNumCols() + 1):
         newVal = rational.Rational(t.getItem(lbVarRow, j)) / abs(lbVarCoeff)
         t.setItem(lbVarRow, j, newVal)
-
     # Update other rows in the appropriate part of the tableaux
     for i in getRowNums(ebVar):
         if t.getItem(i, varToCol(ebVar)) != 0:
-            for j in xrange(2, t.getNumCols() + 1):
+            for j in range(2, t.getNumCols() + 1):
                 newVal = t.getItem(i, j) + t.getItem(i, varToCol(ebVar)) *\
                         t.getItem(lbVarRow, j)
                 t.setItem(i, j, newVal)
             t.setItem(i, varToCol(ebVar), 0)
-
     return lbVar
 
-
-def getEquilibrium(t, p1SCount):
-    """Returns the equilibrium from the given tableaux. The returned result
+"""Returns the equilibrium from the given tableaux. The returned result
     might contain mixed strategies like (1/3, 0/1), so normalization is need to
     be performed on the result.
 
@@ -187,14 +184,16 @@ def getEquilibrium(t, p1SCount):
 
     Raises ValueError if some of the preconditions are not met.
     """
+def getEquilibrium(t, p1SCount):
+
     # 1st precondition
     if p1SCount < 0 or t.getNumRows() <= p1SCount:
         raise ValueError('Invalid number of strategies of player 1.')
     # 2nd precondition
     firstColNums = []
-    for i in xrange(1, t.getNumRows() + 1):
+    for i in range(1, t.getNumRows() + 1):
         firstColNums.append(abs(t.getItem(i, 1)))
-    for i in xrange(1, t.getNumRows() + 1):
+    for i in range(1, t.getNumRows() + 1):
         if not i in firstColNums:
             raise ValueError('Invalid indices in the first column of the tableaux.')
 
@@ -203,7 +202,7 @@ def getEquilibrium(t, p1SCount):
     eqs = t.getNumRows() * [0]
 
     # Equilibrium is in the second column of the tableaux
-    for i in xrange(1, t.getNumRows() + 1):
+    for i in range(1, t.getNumRows() + 1):
         # Strategy
         strat = t.getItem(i, 1)
         # Strategy probability
@@ -215,9 +214,7 @@ def getEquilibrium(t, p1SCount):
     # Convert the found equilibrium into a tuple
     return (tuple(eqs[0:p1SCount]), tuple(eqs[p1SCount:]))
 
-
-def normalizeEquilibrium(eq):
-    """Normalizes and returns the selected equilibrium (every probability
+"""Normalizes and returns the selected equilibrium (every probability
     in a players mixed strategy will have the same denominator).
 
     eq - equilibrium to be normalized (tuple of two tuples of Rationals)
@@ -228,12 +225,14 @@ def normalizeEquilibrium(eq):
 
     Raises ValueError if some of the preconditions are not met.
     """
+def normalizeEquilibrium(eq):
+
     # 1st precondition
     if len(eq) != 2 or (len(eq[0]) == 0 or len(eq[1]) == 0):
         raise ValueError('Selected equilibrium is not valid.')
     # 2nd precondition
-    for i in xrange(0, 2):
-        for j in xrange(0, len(eq[i])):
+    for i in range(0, 2):
+        for j in range(0, len(eq[i])):
             if not isinstance(eq[i][j], rational.Rational):
                 raise ValueError('Selected equilibrium contains a ' + \
                                  'non-rational number.')
@@ -246,9 +245,7 @@ def normalizeEquilibrium(eq):
 
     return (normalizeEqPart(eq[0]), normalizeEqPart(eq[1]))
 
-
-def lemkeHowson(m1, m2):
-    """Runs the Lemke-Howson algorithm on the selected two matrices and
+"""Runs the Lemke-Howson algorithm on the selected two matrices and
     returns the found equilibrium in mixed strategies. The equilibrium
     will be normalized before it is returned.
 
@@ -261,6 +258,9 @@ def lemkeHowson(m1, m2):
 
     Raises ValueError if the first precondition is not met.
     """
+
+def lemkeHowson(m1, m2):
+
     # Before we start, we need to normalize both matrices
     # to ensure some assumptions about values in both matrices
     (normM1, normM2) = normalizeMatrices(m1, m2)
