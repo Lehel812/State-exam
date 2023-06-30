@@ -280,3 +280,18 @@ def lemkeHowson(m1, m2):
     # Get the equilibrium from the resulting tableaux,
     # normalize it and return it
     return normalizeEquilibrium(getEquilibrium(t, p1SCount))
+
+
+def unnormalizedEquilibrium(m1,m2):
+
+    (normM1, normM2) = normalizeMatrices(m1, m2)
+    t = createTableaux(normM1, normM2)
+    p1SCount = normM1.getNumRows()
+    initBasisVar = 1
+    leftBasisVar = makePivotingStep(t, p1SCount, initBasisVar)
+    while abs(leftBasisVar) != initBasisVar:
+        leftBasisVar = makePivotingStep(t, p1SCount, -leftBasisVar)
+    return getEquilibrium(t, p1SCount)
+
+
+
